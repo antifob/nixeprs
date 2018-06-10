@@ -46,25 +46,34 @@ prsucc() {
 	printf '[S] %s\n' "${1}"
 }
 
-grep '^[^#]' "${PROGBASE}/${1}.tests" | grep -Ev '^[[:space:]]*$' | \
-while read _line; do
-	i=$(printf '%s' "${_line}" | awk -F'#' '{print $1;}' | sed -Ee 's|\s*$||')
-	x=$(printf '%s' "${_line}" | awk -F'#' '{print $2;}' | sed -Ee 's|^\s*||')
+run() {
+	printf '[I] Running test for: %s\n' "${1}"
 
-	set +e
-	o=$(genin "${1}" "${i}" | nix-repl 2>&1 | filtr)
-	set -e
+	grep '^[^#]' "${PROGBASE}/${1}.tests" | grep -Ev '^[[:space:]]*$' | \
+	while read _line; do
+		i=$(printf '%s' "${_line}" | awk -F'#' '{print $1;}' | sed -Ee 's|\s*$||')
+		x=$(printf '%s' "${_line}" | awk -F'#' '{print $2;}' | sed -Ee 's|^\s*||')
 
-	fn=prsucc
-	if [ X- = X"${x}" ]; then
-		if ! printf '%s' "${o}" | grep -q '^error:'; then
+		set +e
+		o=$(genin "${1}" "${i}" | nix-repl 2>&1 | filtr)
+		set -e
+
+		fn=prsucc
+		if [ X- = X"${x}" ]; then
+			if ! printf '%s' "${o}" | grep -q '^error:'; then
+				fn=prfail
+			fi
+		elif [ X"${x}" != X"${o}" ]; then
 			fn=prfail
 		fi
-	elif [ X"${x}" != X"${o}" ]; then
-		fn=prfail
-	fi
 
-	$fn "${i}" "${x}" "${o}"
+		$fn "${i}" "${x}" "${o}"
+	done
+}
+
+while [ X != X"${1:-}" ]; do
+	run "${1}"
+	shift
 done
 
 # ==================================================================== #
