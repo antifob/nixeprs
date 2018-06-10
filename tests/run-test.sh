@@ -43,7 +43,7 @@ prfail() {
 }
 
 prsucc() {
-	printf '[S] %s\n' "${1}"
+	printf '[S] %s -> %s\n' "${1}" "${2}"
 }
 
 run() {
