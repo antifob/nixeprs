@@ -21,12 +21,6 @@
 
 xs:
 let
-    uniq = x: xs: ys:
-        wrap xs (if builtins.elem x ys then ys else ys ++ [x]);
-
-    wrap = xs: ys:
-        if 0 == (builtins.length xs)
-        then ys
-        else uniq (builtins.head xs) (builtins.tail xs) ys;
+    inherit (builtins) elem foldl';
 in
-    wrap xs []
+    foldl' (a: b: if elem b a then a else a ++ [b]) [] xs
