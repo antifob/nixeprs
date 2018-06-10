@@ -19,8 +19,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-xs:
 let
     inherit (builtins) elem foldl';
 in
-    foldl' (a: b: if elem b a then a else a ++ [b]) [] xs
+    foldl' (a: b: if elem b a then a else a ++ [b]) []
