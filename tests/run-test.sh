@@ -24,7 +24,7 @@ genin() {
 	shift
 
 	cat << __EOF__
-${fn} = import ./../${fn}.nix
+${fn} = import ${PROGBASE}/../${fn}.nix
 r = ${fn} ${@}
 r
 __EOF__
